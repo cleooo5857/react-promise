@@ -12,6 +12,6 @@ export const TokenRepository = {
         return localStorage.getItem(TOKEN_KEY);
     },
     removeToken: (removetoken) => {
-        localStorage.removeItem(TOKEN_KEY,removetoken);
+        return localStorage.removeItem(TOKEN_KEY);
     },
 };

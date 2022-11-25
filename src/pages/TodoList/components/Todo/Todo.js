@@ -39,29 +39,38 @@ function Todo({ todo, todoList, setTodoList }) {
         setEdit(true);
     };
 
-    const onDeleteTodo = () => {
+    const onDeleteTodo = async() => {
         // 어떤 값을? = > id
         // 결과값 -> 성공, 실패
         // 성공? -> 백엔드 응답 값? (삭제한 todo의 id) -> filter(id)
         // 실패? -> ex. 이미 없는 todo입니다. <-- error => alert(modal)
-        axiosInstance
-            .delete(`/todo/${todo.id}`)
-            .then((res) => {
-                if (res.status === 200) {
-                    // todoList.pop(); => 원본훼손
-                    // todolist.filter ==> 단지 보여주는거 제거된 배열을
-                    // 제거된 새로운 배열을 변수에 담는 것 (깊은 복사)
+        // axiosInstance
+        //     .delete(`/todo/${todo.id}`)
+        //     .then((res) => {
+        //         if (res.status === 200) {
+        //             // todoList.pop(); => 원본훼손
+        //             // todolist.filter ==> 단지 보여주는거 제거된 배열을
+        //             // 제거된 새로운 배열을 변수에 담는 것 (깊은 복사)
 
-                    const todoList_d = todoList.filter((todo) => todo.id !== res.data.data);
-                    setTodoList(todoList_d);
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+        //             const todoList_d = todoList.filter((todo) => todo.id !== res.data.data);
+        //             setTodoList(todoList_d);
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         console.error(err);
+        //     });
+        try{
+            const id = todo.id
+            const res = await TodoApi.deleteTodo({id});
+            if (res.status === 200) {
+                const todoList_d = todoList.filter((todo) => todo.id !== res.data.data);
+                setTodoList(todoList_d);
+            }
+        }catch(err){
+            console.log(err);
+        }
     };
-
-    const onUpdateTodo = () => {
+    const onUpdateTodo = async () => {
         /* 
         어떤값?
         id, content, flag => 어떤 값이 응답? 
@@ -70,48 +79,90 @@ function Todo({ todo, todoList, setTodoList }) {
 
         if (todo.content === newTodo) return setEdit(false);
 
-        const data = {
+        // const data = {
+        //     content: newTodo,
+        //     flag: todo.flag,
+        // };
+
+        // axiosInstance
+        //     .put(`/todo/${todo.id}`, data)
+        //     .then((res) => {
+        //         if (res.status === 200) {
+        //             const { data } = res.data;
+        //             console.log(data);
+        //             const newTodoList = [...todoList];
+        //             let todo = newTodoList.find((todo) => todo.id === data.id);
+        //             todo.content = data.content;
+        //             setTodoList(newTodoList);
+        //             setEdit(false);
+        //         }
+        //     })
+        //     .catch((err) => console.error(err));
+      
+        
+        try{
+            const data = {
             content: newTodo,
             flag: todo.flag,
-        };
+            };
 
-        axiosInstance
-            .put(`/todo/${todo.id}`, data)
-            .then((res) => {
-                if (res.status === 200) {
-                    const { data } = res.data;
-                    console.log(data);
-                    const newTodoList = [...todoList];
-                    let todo = newTodoList.find((todo) => todo.id === data.id);
-                    todo.content = data.content;
-                    setTodoList(newTodoList);
-                    setEdit(false);
-                }
-            })
-            .catch((err) => console.error(err));
+            const id = todo.id;
+            // console.log({data,id});
 
-            
+            const res = await TodoApi.updateTodo({id,data});
+            console.log(res);
+            if (res.status === 200) {
+                const { data } = res.data;
+                console.log(data);
+                const newTodoList = [...todoList];
+                let todo = newTodoList.find((todo) => todo.id === data.id);
+                todo.content = data.content;
+                setTodoList(newTodoList);
+                setEdit(false);
+            }
+        }catch(err){
+            console.log(err);
+        }
 
     };
 
-    const onUpdateFlag = () => {
-        const data = {
-            content: todo.content,
-            flag: !todo.flag,
-        };
+    const onUpdateFlag = async() => {
+        // const data = {
+        //     content: todo.content,
+        //     flag: !todo.flag,
+        // };
 
-        axios
-            .put(`http://localhost:9000/todo/${todo.id}`, data)
-            .then((res) => {
+        // axios
+        //     .put(`http://localhost:9000/todo/${todo.id}`, data)
+        //     .then((res) => {
+        //         if (res.status === 200) {
+        //             const { data } = res.data;
+        //             const newTodoList = [...todoList];
+        //             let todo = newTodoList.find((todo) => todo.id === data.id);
+        //             todo.flag = data.flag;
+        //             setTodoList(newTodoList);
+        //         }
+        //     })
+        //     .catch((err) => console.error(err));
+        try{
+            const data = {
+                content: todo.content,
+                flag: !todo.flag,
+            };
+            const id = todo.id;
+
+            const res  = await TodoApi.updateTodo({id,data})
                 if (res.status === 200) {
-                    const { data } = res.data;
-                    const newTodoList = [...todoList];
-                    let todo = newTodoList.find((todo) => todo.id === data.id);
-                    todo.flag = data.flag;
-                    setTodoList(newTodoList);
-                }
-            })
-            .catch((err) => console.error(err));
+                const { data } = res.data;
+                const newTodoList = [...todoList];
+                let todo = newTodoList.find((todo) => todo.id === data.id);
+                todo.flag = data.flag;
+                setTodoList(newTodoList);
+            }
+        }catch(err){
+            console.log(err);
+        }
+
     };
 
     return (

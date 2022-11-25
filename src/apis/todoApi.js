@@ -9,9 +9,11 @@ export const TodoApi = {
     getTodo:({content}) =>{
         return axiosInstance.post(path, { content })
     },
-    updateTodo:()=>{
-        return axiosInstance.put(path)
+    updateTodo:({id,data})=>{
+        return axiosInstance.put(path + '/' + id , data)
     },
-    deleteTodo:()=>{
+    deleteTodo:({id})=>{
+        return axiosInstance.delete(path + '/' + id)
+            
     }
 }
